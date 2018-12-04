@@ -1,16 +1,13 @@
 #include <GL/gl.h>
 #include <GL/freeglut.h>
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include "Card.h"
 #include "SOIL/SOIL.h"
 #include <cmath>
+#include "Card.h"
 
 //���������� ����������
-vector<Card> Deck, Discard;      // ��������� ������ � �����;
-Player Player1, Player2;        // ������
-int state=0;                    // ��� ��� ( 0 - �������, 1 - ���, 2 - �����, 3 - ������� �����
+vector<Card> Deck, Discard;      // колода сброса и колода игровая;
+Player Player1, Player2;        // игроки
+int state=0;                    // позиция нажатия
 int xPos=0, yPos=0;
 
 using namespace std;
@@ -22,7 +19,6 @@ void InitWindow(){
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
 }
-void display();
 GLuint textures[5];
 void LoadTextures() {
     string str;
@@ -41,7 +37,7 @@ void LoadTextures() {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     }
 }
-//��������� �����
+//Рисуем одну карту
 GLvoid DrawCard(GLfloat x1,GLfloat y1,GLfloat x2, GLfloat y2, char color){
     int c=4;
     switch(color){
@@ -59,12 +55,15 @@ GLvoid DrawCard(GLfloat x1,GLfloat y1,GLfloat x2, GLfloat y2, char color){
     glBindTexture(GL_TEXTURE_2D, textures[c]);
     glBegin(GL_QUADS);
     glTexCoord2d(0.0, 0.0);        glVertex3f(x1,y2,0);
-    glTexCoord2d(1.0, 0.0);        glVertex3f(x1,y1,0);
+    glTexCoord2d(1.0, 0.0);        glVertex3f(x2,y2,0);
     glTexCoord2d(1.0, 1.0);        glVertex3f(x2,y1,0);
-    glTexCoord2d(0.0, 1.0);        glVertex3f(x2,y2,0);
+    glTexCoord2d(0.0, 1.0);        glVertex3f(x1,y1,0);
     glEnd();
 }
-// c��������� ���������
+void DrawCards(Player Player1){
+
+}
+// получаем координаты если нажата ЛКМ
 void mouse(int button, int state, int x,int y){
     if(button ==GLUT_LEFT_BUTTON && state == GLUT_DOWN){
         xPos = x;
@@ -77,24 +76,16 @@ void display() {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    //gluPerspective(110, 1366.0f / 768.0f, 50.0f, 0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0.0, 1.0, 0.0);
+    if (state==0){
+        InitDeck();
 
-    glBegin(GL_QUADS);//фронт1 | левая
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3d(1.0, 1.0, 0.0);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3d(1.0, -1.0, -0.0);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3d(-1.0, -1.0, -0.0);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3d(-1.0, 1.0, 0.0);
-    glEnd();
+    }
+
     glFlush();
-
     glutSwapBuffers();
+    glutPostRedisplay();
 }
 
 int main(int argc, char *argv[]) {
@@ -102,9 +93,10 @@ int main(int argc, char *argv[]) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(0, 0);
     glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH),glutGet(GLUT_SCREEN_HEIGHT));
-    glutCreateWindow("Monopoly");
+    glutCreateWindow("UNO");
     glEnable(GL_DEPTH_TEST);
     glutDisplayFunc(display);
+    glutMouseFunc(mouse);
     InitWindow();
     LoadTextures();
     glutMainLoop();

@@ -3,5 +3,5 @@ project(untitled1)
 
 set(CMAKE_CXX_STANDARD 14)
 set(LIBS -lSOIL -lglut -lGL -lGLU -static-libstdc++ -static-libgcc)
-add_executable(${PROJECT_NAME} main.cpp )
+add_executable(${PROJECT_NAME} main.cpp Card.cpp)
 target_link_libraries(${PROJECT_NAME} ${LIBS})

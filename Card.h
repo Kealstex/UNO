@@ -10,14 +10,14 @@
 #include <ctime>
 
 using namespace std;
-struct Card {                           //структура одной карты
-    char Color = 'A';                   // цвет карты. RGBYA -  рс«ел—ин?Єлт„Єрн
-    int Value = 0;                      // номинал карты
-    int Score = 0;                      // дл¤ подсчЄта очков
-    bool IsInHand = false;              // фунцци¤ дл¤ определени¤ местонахождени¤ карты
-    int x1=0;                           // Левый верхний
+struct Card {                           //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    char Color = 'A';                   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ. RGBYA - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ?пїЅпїЅпїЅпїЅпїЅ
+    int Value = 0;                      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    int Score = 0;                      // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    bool IsInHand = false;              // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    int x1=0;                           // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     int y1=0;
-    int x2=0;                           // Правый нижний
+    int x2=0;                           // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     int y2=0;
 
 };
@@ -25,12 +25,11 @@ struct Player {
     vector<Card> deck;
     int score=0;
 };
-extern Player Player1, Player2;
-extern vector<Card> Deck, Discard;      // игральна¤ колода и сброс;
-void Shuffle(vector<Card> &v);          //перетусовка карт
-void SortIsInHand(vector<Card> &v);                       // сортировка по значению
-void InitCard(char color, int value, int score);     //«аполнение карты
-void InitDeck();                        //«аполнение колоды
-vector<Card> RandomDeck(int count, Player &player); //создание рандомной колоды из count карт
-
+extern Player Player1, Player2;         // РёРіСЂРѕРєРё
+extern vector<Card> Deck, Discard;      // РРіСЂРѕРІР°СЏ РєРѕР»РѕРґР° Рё РєРѕР»РѕРґР° СЃР±СЂРѕСЃР°
+void Shuffle(vector<Card> &v);          //РїРµСЂРµРјРµС€РёРІР°РЅРёРµ РєРѕР»РѕРґС‹
+void SortIsInHand(vector<Card> &v);                       //РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РЅР°Р»РёС‡РёСЋ РІ СЂСѓРєР°С… ( РІ СЂСѓРєР°С… - РІ РєРѕРЅС†Рµ)
+void InitCard(char color, int value, int score);     //РЎРѕР·РґР°РЅРёРµ РѕРґРЅРѕР№ РєР°СЂС‚С‹
+void InitDeck();                        //CРѕР·РґР°РЅРёРµ РІСЃРµС… РєР°СЂС‚
+void RandomDeck(int count, Player &player); //РџРѕРјРµС‰РµРЅРёРµ count РєР°СЂС‚ РёР· Deck РІ Р СѓРєРё
 #endif //UNTITLED1_CARD_H
