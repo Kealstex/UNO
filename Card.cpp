@@ -8,16 +8,16 @@ void InitDeck() {
     char color[4] = {'R', 'G', 'B', 'Y'};
     //по цвету -> по номиналу
     for (int j = 0; j < 4; j++) {
-        for (int i = 1; i < 26; i++) {
+        for (int i = 1; i < 14; i++) {
             //<10 value = score, >10 score = 20
             InitCard(color[j], i % 13, (i % 13 > 9) ? 20 : i % 13);
         }
         InitCard('A', 13, 50);
         InitCard('A', 14, 50);
     }
-    // Shuffle(Deck);
-    SortIsInHand(Deck);
-    cout << Deck.size();
+     Shuffle(Deck);
+     //SortIsInHand(Deck);
+    //cout << Deck.size();
 }
 void InitCard(char color, int value, int score) {
     Card card;
@@ -62,7 +62,7 @@ void RandomDeck(int count, Player &player) {
     while (i < count && i < Deck.size()) {
         card = Deck[i];
         player.deck.push_back(card);
-        cout<<"Цдаляем.: "<<Deck[i].Color<<Deck[i].Value<<endl;
+       // cout<<"Цдаляем.: "<<Deck[i].Color<<Deck[i].Value<<endl;
         Deck.erase(Deck.begin() + i);
         i++;
     }
