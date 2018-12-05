@@ -28,9 +28,13 @@ struct Player {
 };
 extern Player Player1, Player2;         // игроки
 extern vector<Card> Deck, Discard;      // Игровая колода и колода сброса
+extern GLuint textures[6];
+extern GLfloat dx, dy, wSide,hSide;
 void Shuffle(vector<Card> &v);          //перемешивание колоды
 void SortIsInHand(vector<Card> &v);                       //Сортировка по наличию в руках ( в руках - в конце)
 void InitCard(char color, int value, int score);     //Создание одной карты
 void InitDeck();                        //Cоздание всех карт
 void RandomDeck(int count, Player &player); //Помещение count карт из Deck в Руки
+void DrawCards(int player, vector<Card> &v);
+void DrawCard(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, char color);
 #endif //UNTITLED1_CARD_H
