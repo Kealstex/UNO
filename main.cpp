@@ -1,6 +1,6 @@
 #include <GL/freeglut.h>
 #include "SOIL/SOIL.h"
-#include "Card.h"
+#include "Game.h"
 
 vector<Card> Deck, Discard;      // колода сброса и колода игровая;
 Player Player1, Player2;        // игроки
@@ -10,7 +10,8 @@ int state = 0;                    // стадии
 //2 - проверка на правила;
 
 int xPos = 6000, yPos = 6000;
-GLfloat wSide = 0.1f, hSide = 0.35f;             // сторoна карты - 1/20 от ширины экрана и 1/5 от высоты
+GLfloat wSide = 0.1f, hSide = 0.35f;             // сторoна карты - от ширины и высоты
+GLfloat ar = wSide / hSide;
 GLfloat dx = 0.05f, dy = 0.2f;                        // расстояние между картами
 double hScreen, wScreen;          // монитор
 GLuint textures[6];
@@ -78,14 +79,19 @@ int IsCard() {
     for (int i = 0; i < Player1.deck.size(); i++) {
 
 
-        if (abs(getX()) <= abs(Player1.deck[i].x2) && abs(getX()) >= abs(Player1.deck[i].x1)
+        /*if (abs(getX()) <= abs(Player1.deck[i].x2) && abs(getX()) >= abs(Player1.deck[i].x1)
             && abs(getY()) <= abs(Player1.deck[i].y2) && abs(getY()) >= abs(Player1.deck[i].y1)) {
             //cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
             //state = ;
             return i;
-        }
-        //cout<<"X="<<Player1.deck[i].x1<<" "<<Player1.deck[i].x2<<" "<<getX()<<endl;
-        //cout<<"Y="<<Player1.deck[i].y1<<" "<<Player1.deck[i].y2<<" "<<getY()<<endl;
+        }*/
+
+            if (getX() >= Player1.deck[i].x1 && getX() <= Player1.deck[i].x2 &&
+                getY() <= Player1.deck[i].y1 && getY() >= Player1.deck[i].y2) {
+//                cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
+                return i;
+            }
+
     }
     return -1;
 }
@@ -98,7 +104,7 @@ void display() {
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //опрнднляем позицию курсора
+
     //начало игры
     if (state == 0) {
         //очистка колод
@@ -106,8 +112,8 @@ void display() {
         //инициализация новой колоды
         InitDeck();
         //раздача по 7 карт
-        more(7, Player1);
-        more(38, Player2);
+        more(20, Player1);
+        more(20, Player2);
         //достаем первую активную карту
         PushInDiscard();
         state = 1; // ходит первый игрок
@@ -121,7 +127,10 @@ void display() {
         //cout<<"x="<<getX()<<"y="<<getY()<<"\n";
     }
     if (state == 2) {
-
+        if (IsRight(Player1.deck[IsCard()])) {
+            Push(IsCard(), Player1);
+            //state = 3;
+        }
     }
     DrawDeck();
     DrawActivity();

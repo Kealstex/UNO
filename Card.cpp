@@ -156,9 +156,13 @@ void DrawCards(int player, Player &players) {
     }
 }
 void PushInDiscard(){
-    Card card;
+    Card card; int i=1;
     //запомнаем последнюю
-    card = Deck[Deck.size()-1];
+
+    do{
+        card = Deck[Deck.size()-i];
+        i++;
+    }while(card.Color=='A');
     Discard.push_back(card);
     Deck.pop_back();
 }
@@ -171,11 +175,11 @@ void DrawActivity(){
     DrawCard(x1,y1,x2,y2,c);
 }
 void DrawDeck(){
-    GLfloat x1 = -wSide/2.0-4*wSide ,
+    GLfloat x1 = -wSide/2.0-9*wSide ,
             x2 = x1 + wSide,
             y1 = hSide/2.0,
             y2 = y1 - hSide;
     for(int i=0;i<Deck.size();i++){
-        DrawCard(x1+i*0.015f,y1,x2+i*0.015f,y2,'D');
+        DrawCard(x1+i*0.015f,y1,x2+i*0.015f,y2,'*');
     }
 }
