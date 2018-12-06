@@ -5,9 +5,12 @@
 vector<Card> Deck, Discard;      // колода сброса и колода игровая;
 Player Player1, Player2;        // игроки
 int state = 0;                    // стадии
-// 1 - первый игрок
-int xPos = 0, yPos = 0;
-GLfloat wSide = 0.1f, hSide = 0.2f;             // сторoна карты - 1/20 от ширины экрана и 1/5 от высоты
+//0 - начало
+//1 - ход мой
+//2 - проверка на правила;
+
+int xPos = 6000, yPos = 6000;
+GLfloat wSide = 0.1f, hSide = 0.35f;             // сторoна карты - 1/20 от ширины экрана и 1/5 от высоты
 GLfloat dx = 0.05f, dy = 0.2f;                        // расстояние между картами
 double hScreen, wScreen;          // монитор
 GLuint textures[6];
@@ -40,12 +43,51 @@ void LoadTextures() {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     }
 }
+
+//очищаем колоды
+void DeckClear() {
+    Deck.clear();
+    Discard.clear();
+    Player1.deck.clear();
+    Player2.deck.clear();
+}
+
+// преобразование координат в нужный вид ( -1..1 )
+GLfloat getX() {
+    if (xPos <= wScreen / 2.0) {
+        return 2.0f * xPos / wScreen - 1;
+    } else return 2.0 * (xPos - wScreen / 2.0f) / wScreen;
+}
+
+GLfloat getY() {
+    if (yPos <= hScreen / 2.0) {
+        return 1 - 2.0f * yPos / hScreen;
+    } else return -2.0 * (yPos - hScreen / 2.0f) / hScreen;
+}
+
 // получаем координаты если нажата ЛКМ
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         xPos = x;
         yPos = y;
     }
+}
+
+// возвращает индекс выбранной карты.Иначе -1
+int IsCard() {
+    for (int i = 0; i < Player1.deck.size(); i++) {
+
+
+        if (abs(getX()) <= abs(Player1.deck[i].x2) && abs(getX()) >= abs(Player1.deck[i].x1)
+            && abs(getY()) <= abs(Player1.deck[i].y2) && abs(getY()) >= abs(Player1.deck[i].y1)) {
+            //cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
+            //state = ;
+            return i;
+        }
+        //cout<<"X="<<Player1.deck[i].x1<<" "<<Player1.deck[i].x2<<" "<<getX()<<endl;
+        //cout<<"Y="<<Player1.deck[i].y1<<" "<<Player1.deck[i].y2<<" "<<getY()<<endl;
+    }
+    return -1;
 }
 
 // display() Callback function
@@ -56,27 +98,38 @@ void display() {
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    //опрнднляем позицию курсора
     //начало игры
     if (state == 0) {
-        RandomDeck(35, Player1);
-        RandomDeck(35, Player2);
+        //очистка колод
+        DeckClear();
+        //инициализация новой колоды
+        InitDeck();
+        //раздача по 7 карт
+        more(7, Player1);
+        more(38, Player2);
+        //достаем первую активную карту
+        PushInDiscard();
+        state = 1; // ходит первый игрок
 
-        for (int i = 0; i < Player1.deck.size(); i++) {
-            cout << Player1.deck[i].Color << " " << Player1.deck[i].Value << endl;
-        }
-
-        DrawCards(1, Player1.deck);
-        DrawCards(2, Player2.deck);
-        //state = 1;
     }
     if (state == 1) {
-        DrawCards(1, Player1.deck);
-        DrawCards(2, Player2.deck);
+        //если нажал по карте - проверить правила
+        if (IsCard() > -1) {
+            state = 2;
+        }
+        //cout<<"x="<<getX()<<"y="<<getY()<<"\n";
     }
+    if (state == 2) {
 
+    }
+    DrawDeck();
+    DrawActivity();
+    DrawCards(1, Player1);
+    DrawCards(2, Player2);
     glFlush();
     glutSwapBuffers();
-    //glutPostRedisplay();
+    glutPostRedisplay();
 }
 
 int main(int argc, char *argv[]) {
@@ -86,12 +139,9 @@ int main(int argc, char *argv[]) {
     //размеры экрана
     hScreen = glutGet(GLUT_SCREEN_HEIGHT);
     wScreen = glutGet(GLUT_SCREEN_WIDTH);
-    glutInitWindowSize(wScreen , hScreen );
+    glutInitWindowSize(wScreen, hScreen);
     glutCreateWindow("UNO");
     glEnable(GL_DEPTH_TEST);
-
-    //инициализая карт
-    InitDeck();
     InitWindow();
     glutDisplayFunc(display);
     glutMouseFunc(mouse);
