@@ -39,7 +39,7 @@ void InitDeck();                        //Cоздание всех карт
 void more(int count, Player &player);   //Помещение count карт из Deck в Руки
 void DrawCards(int player, Player &players);
 void DrawCard(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, char color);
-void PushInDiscard();                   // кладет верхнюю карту из колоды в сброс (в начале игры)
+void Activity();                   // кладет верхнюю карту из колоды в сброс (в начале игры)
 void DrawActivity();                    // Отрисовывает активную карту
 void DrawDeck();
 #endif //UNTITLED1_CARD_H

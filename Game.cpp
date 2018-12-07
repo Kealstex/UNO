@@ -9,7 +9,7 @@ bool IsRight(Card card){
     }
     return false;
 }
-void Push(int i, Player &player)
+void PushInDiscard(int i, Player &player)
 {
     Card card;
     card = player.deck[i];
@@ -17,4 +17,16 @@ void Push(int i, Player &player)
     Discard.push_back(card);
     //удаляем карту в отбое
     player.deck.erase(player.deck.begin() + i);
+}
+int Player2Chose(){
+    Card card;
+    int i=-1;
+    do{
+        i++;
+        card = Player2.deck[i];
+        if(IsRight(card)){
+            return i;
+        }
+    }while(i < Player2.deck.size());
+ return -1;
 }

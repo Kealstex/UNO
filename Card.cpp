@@ -125,7 +125,7 @@ void DrawCards(int player, Player &players) {
         if (player == 1)
             DrawCard(x1, y1, x2, y2, players.deck[i].Color);
         else
-            DrawCard(x1, y1, x2, y2, 'D');
+            DrawCard(x1, y1, x2, y2, players.deck[i].Color);
 
         players.deck[i].x1 = x1;
         players.deck[i].x2 = x2;
@@ -155,7 +155,7 @@ void DrawCards(int player, Player &players) {
         }
     }
 }
-void PushInDiscard(){
+void Activity(){
     Card card; int i=1;
     //запомнаем последнюю
 
@@ -183,3 +183,4 @@ void DrawDeck(){
         DrawCard(x1+i*0.015f,y1,x2+i*0.015f,y2,'*');
     }
 }
+

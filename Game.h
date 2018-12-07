@@ -6,6 +6,6 @@
 #define UNTITLED1_GAME_H
 #include "Card.h"
 bool IsRight(Card card);
-
-void Push(int i, Player &player);
+int Player2Chose();                             //возвращает индекс подходящей карты,иначе -1
+void PushInDiscard(int i, Player &player);      // кладет карту с индексом i игрока player в отбой
 #endif //UNTITLED1_GAME_H

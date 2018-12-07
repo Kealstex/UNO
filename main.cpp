@@ -1,4 +1,5 @@
 #include <GL/freeglut.h>
+#include <zconf.h>
 #include "SOIL/SOIL.h"
 #include "Game.h"
 
@@ -8,6 +9,8 @@ int state = 0;                    // стадии
 //0 - начало
 //1 - ход мой
 //2 - проверка на правила;
+//3 - ход компа
+//4 - нажатие на колоду, чтобы взять карту
 
 int xPos = 6000, yPos = 6000;
 GLfloat wSide = 0.1f, hSide = 0.35f;             // сторoна карты - от ширины и высоты
@@ -66,34 +69,51 @@ GLfloat getY() {
     } else return -2.0 * (yPos - hScreen / 2.0f) / hScreen;
 }
 
+// возвращает индекс выбранной карты.Иначе -1
+int IsCard() {
+    for (int i = 0; i < Player1.deck.size(); i++) {
+        if (getX() >= Player1.deck[i].x1 && getX() <= Player1.deck[i].x2 &&
+            getY() <= Player1.deck[i].y1 && getY() >= Player1.deck[i].y2) {
+                cout<<Player1.deck[i].Color<<endl;
+            return i;
+        }
+
+    }
+    return -1;
+}
+bool IsDeck(){
+   GLfloat x1 = -wSide/2.0f-9*wSide ,
+            x2 = x1 + wSide  ,
+            y1 = hSide/2.0f,
+            y2 = y1 - hSide;
+    /*if (getX() >= x1 && getX() <= x2 && getY() <= y1 && getY() >= y2 ){
+        //cout<<"Yes"<<endl;
+        return true;
+    }*/
+    //cout<<"NO"<<x1<<" " <<getX()<<" "<<x2<<endl;
+    for (int i = 0; i < Deck.size(); i++) {
+        x1 = -wSide/2.0-9*wSide + i*0.015f,
+        x2 = x1 + wSide,
+        y1 = hSide/2.0,
+        y2 = y1 - hSide;
+        if (getX() >= x1 && getX() <= x2 &&
+            getY() <= y1 && getY() >= y2) {
+//                cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
+            return true;
+        }
+        cout<<"NO"<<x1<<" " <<getX()<<" "<<x2<<endl;
+
+    }
+    return false;
+}
+
+
 // получаем координаты если нажата ЛКМ
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         xPos = x;
         yPos = y;
     }
-}
-
-// возвращает индекс выбранной карты.Иначе -1
-int IsCard() {
-    for (int i = 0; i < Player1.deck.size(); i++) {
-
-
-        /*if (abs(getX()) <= abs(Player1.deck[i].x2) && abs(getX()) >= abs(Player1.deck[i].x1)
-            && abs(getY()) <= abs(Player1.deck[i].y2) && abs(getY()) >= abs(Player1.deck[i].y1)) {
-            //cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
-            //state = ;
-            return i;
-        }*/
-
-            if (getX() >= Player1.deck[i].x1 && getX() <= Player1.deck[i].x2 &&
-                getY() <= Player1.deck[i].y1 && getY() >= Player1.deck[i].y2) {
-//                cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
-                return i;
-            }
-
-    }
-    return -1;
 }
 
 // display() Callback function
@@ -115,7 +135,7 @@ void display() {
         more(20, Player1);
         more(20, Player2);
         //достаем первую активную карту
-        PushInDiscard();
+        Activity();
         state = 1; // ходит первый игрок
 
     }
@@ -124,13 +144,36 @@ void display() {
         if (IsCard() > -1) {
             state = 2;
         }
+        /*else if (IsDeck()){
+            // если нажал на колоде - добавить карту
+            more(1,Player1);
+            state = 3;
+        }*/
         //cout<<"x="<<getX()<<"y="<<getY()<<"\n";
     }
     if (state == 2) {
+        //если выбранная карта соответствует правилам - скинуть её в отбой
         if (IsRight(Player1.deck[IsCard()])) {
-            Push(IsCard(), Player1);
-            //state = 3;
+            PushInDiscard(IsCard(), Player1);
+            state = 3;
         }
+    }
+    if (state == 3) {
+        //если нет подохядщей карты -> берет одну;
+        if (Player2Chose() == -1) {
+            sleep(5);
+            more(1, Player2);
+            //если новая карта подходит по правилам -> кладет её в отбой
+            /*if (IsRight(Player2.deck[Player2.deck.size() - 1])) {
+                PushInDiscard(Player2.deck.size() - 1, Player2);
+            }*/
+            state = 1;
+            return;
+        }
+        //если подходящая карта есть -> кладет в отбой
+        //sleep(5);
+        PushInDiscard(Player2Chose(),Player2);
+        state = 1;
     }
     DrawDeck();
     DrawActivity();
@@ -152,6 +195,7 @@ int main(int argc, char *argv[]) {
     glutCreateWindow("UNO");
     glEnable(GL_DEPTH_TEST);
     InitWindow();
+    //glutTimerFunc(timer,)
     glutDisplayFunc(display);
     glutMouseFunc(mouse);
     LoadTextures();
