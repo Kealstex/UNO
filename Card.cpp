@@ -11,6 +11,8 @@ void InitDeck() {
     for (int j = 0; j < 4; j++) {
         for (int i = 1; i < 14; i++) {
             //<10 value = score, >10 score = 20
+
+
             InitCard(color[j], i % 13, (i % 13 > 9) ? 20 : i % 13);
         }
         InitCard('A', 13, 50);
@@ -179,8 +181,6 @@ void DrawDeck(){
             x2 = x1 + wSide,
             y1 = hSide/2.0,
             y2 = y1 - hSide;
-    for(int i=0;i<Deck.size();i++){
-        DrawCard(x1+i*0.015f,y1,x2+i*0.015f,y2,'*');
-    }
+    DrawCard(x1,y1,x2,y2,'*');
 }
 

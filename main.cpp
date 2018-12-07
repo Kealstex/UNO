@@ -17,7 +17,7 @@ GLfloat wSide = 0.1f, hSide = 0.35f;             // сторoна карты - �
 GLfloat ar = wSide / hSide;
 GLfloat dx = 0.05f, dy = 0.2f;                        // расстояние между картами
 double hScreen, wScreen;          // монитор
-GLuint textures[6];
+GLuint textures[5][15];
 
 using namespace std;
 
@@ -32,6 +32,12 @@ void InitWindow() {
 
 void LoadTextures() {
     string str;
+    for (int i = 0; i < 5; i++) {
+        str = string("texture") + std::to_string(i) + string("-");
+        for (int j = 0; j < 15; j++) {
+
+        }
+    }
     for (int i = 0; i < 6; i++) {
         str = "texture";
         str += (48 + i);
@@ -59,8 +65,9 @@ void DeckClear() {
 // преобразование координат в нужный вид ( -1..1 )
 GLfloat getX() {
     if (xPos <= wScreen / 2.0) {
-        return 2.0f * xPos / wScreen - 1;
-    } else return 2.0 * (xPos - wScreen / 2.0f) / wScreen;
+        return (xPos / (wScreen / 2.0)) - 1;
+    }
+    return xPos / (wScreen / 2.0) - 1;
 }
 
 GLfloat getY() {
@@ -74,17 +81,20 @@ int IsCard() {
     for (int i = 0; i < Player1.deck.size(); i++) {
         if (getX() >= Player1.deck[i].x1 && getX() <= Player1.deck[i].x2 &&
             getY() <= Player1.deck[i].y1 && getY() >= Player1.deck[i].y2) {
-                cout<<Player1.deck[i].Color<<endl;
+            //cout<<Player1.deck[i].Color<<endl;
+            /*yPos=6000;
+            xPos=6000;*/
             return i;
         }
 
     }
     return -1;
 }
-bool IsDeck(){
-   GLfloat x1 = -wSide/2.0f-9*wSide ,
-            x2 = x1 + wSide  ,
-            y1 = hSide/2.0f,
+
+bool IsDeck() {
+    GLfloat x1 = -wSide / 2.0f - 9 * wSide,
+            x2 = x1 + wSide,
+            y1 = hSide / 2.0f,
             y2 = y1 - hSide;
     /*if (getX() >= x1 && getX() <= x2 && getY() <= y1 && getY() >= y2 ){
         //cout<<"Yes"<<endl;
@@ -92,16 +102,16 @@ bool IsDeck(){
     }*/
     //cout<<"NO"<<x1<<" " <<getX()<<" "<<x2<<endl;
     for (int i = 0; i < Deck.size(); i++) {
-        x1 = -wSide/2.0-9*wSide + i*0.015f,
+        x1 = -wSide / 2.0 - 9 * wSide + i * 0.015f,
         x2 = x1 + wSide,
-        y1 = hSide/2.0,
+        y1 = hSide / 2.0,
         y2 = y1 - hSide;
         if (getX() >= x1 && getX() <= x2 &&
             getY() <= y1 && getY() >= y2) {
 //                cout<<"YEEEEEEEEEEES IS IT "<<Player1.deck[i].Color;
             return true;
         }
-        cout<<"NO"<<x1<<" " <<getX()<<" "<<x2<<endl;
+        cout << "NO" << x1 << " " << getX() << " " << x2 << endl;
 
     }
     return false;
@@ -116,8 +126,13 @@ void mouse(int button, int state, int x, int y) {
     }
 }
 
+int lastId;
+
 // display() Callback function
 void display() {
+    cout << state << endl;
+    hScreen = glutGet(GLUT_WINDOW_HEIGHT);
+    wScreen = glutGet(GLUT_WINDOW_WIDTH);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
@@ -132,8 +147,8 @@ void display() {
         //инициализация новой колоды
         InitDeck();
         //раздача по 7 карт
-        more(20, Player1);
-        more(20, Player2);
+        more(7, Player1);
+        more(7, Player2);
         //достаем первую активную карту
         Activity();
         state = 1; // ходит первый игрок
@@ -141,9 +156,13 @@ void display() {
     }
     if (state == 1) {
         //если нажал по карте - проверить правила
-        if (IsCard() > -1) {
+        lastId = IsCard();
+        if (lastId > -1) {
             state = 2;
+            cout << "OK card is OK" << endl;
         }
+        xPos = 9999;
+        yPos = 9999;
         /*else if (IsDeck()){
             // если нажал на колоде - добавить карту
             more(1,Player1);
@@ -153,10 +172,14 @@ void display() {
     }
     if (state == 2) {
         //если выбранная карта соответствует правилам - скинуть её в отбой
-        if (IsRight(Player1.deck[IsCard()])) {
-            PushInDiscard(IsCard(), Player1);
+        if (IsRight(Player1.deck[lastId])) {
+            PushInDiscard(lastId, Player1);
+            lastId = -1;
             state = 3;
+        } else {
+            state = 1;
         }
+        //sleep(5);
     }
     if (state == 3) {
         //если нет подохядщей карты -> берет одну;
@@ -172,7 +195,7 @@ void display() {
         }
         //если подходящая карта есть -> кладет в отбой
         //sleep(5);
-        PushInDiscard(Player2Chose(),Player2);
+        PushInDiscard(Player2Chose(), Player2);
         state = 1;
     }
     DrawDeck();

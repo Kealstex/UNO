@@ -29,7 +29,7 @@ struct Player {
 };
 extern Player Player1, Player2;         // игроки
 extern vector<Card> Deck, Discard;      // Игровая колода и колода сброса
-extern GLuint textures[6];
+extern GLuint textures[5][15];
 extern GLfloat dx, dy, wSide,hSide;
 extern double wScreen,hScreen;
 void Shuffle(vector<Card> &v);          //перемешивание колоды
