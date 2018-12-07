@@ -9,14 +9,14 @@ void InitDeck() {
     char color[4] = {'R', 'G', 'B', 'Y'};
     //по цвету -> по номиналу
     for (int j = 0; j < 4; j++) {
-        for (int i = 1; i < 14; i++) {
+        for (int i = 1; i < 26; i++) {
             //<10 value = score, >10 score = 20
 
 
             InitCard(color[j], i % 13, (i % 13 > 9) ? 20 : i % 13);
         }
-        InitCard('A', 13, 50);
-        InitCard('A', 14, 50);
+        //InitCard('A', 13, 50);
+        //InitCard('A', 14, 50);
     }
     Shuffle(Deck);
     //SortIsInHand(Deck);
@@ -25,7 +25,7 @@ void InitDeck() {
 
 void InitCard(char color, int value, int score) {
     Card card;
-    card.Color = color;
+    card.color = color;
     card.Value = value;
     card.Score = score;
     Deck.push_back(card);
@@ -40,8 +40,8 @@ void Shuffle(vector<Card> &v) {
 
 void SortIsInHand(vector<Card> &v) {
     for (int i = 0; i < v.size(); i++)
-        for (int j = i + 1; j < v.size(); j++)
-            if (v[i].IsInHand > v[j].IsInHand) {
+        for (int j = i + 1; j < v.size()-1; j++)
+            if (v[i].color > v[j].color) {
                 Card temp = v[i];
                 v[i] = v[j];
                 v[j] = temp;
@@ -52,60 +52,54 @@ void SortIsInHand(vector<Card> &v) {
 void more(int count, Player &player) {
     int i = 0;
     Card card;
-
-    //Проверка на наличие count карт в стопке
-    if (count > Deck.size()) {
-        //верхнюю карту (активную) оставляем в колоде
-        for (int i = 0; i < Discard.size()-1; i++) {
-            card = Discard[i];
-            //кладем из отбоя в игровую колоду
-            Deck.push_back(card);
-            //удаляем карту в отбое
-            Discard.erase(Discard.begin() + i);
+    if (Deck.size() == 0) {
+        while (Discard.size() != 1) {
+            Deck.push_back(Discard[0]);
+            Discard.erase(Discard.begin());
         }
-        //перемешиваем
-        //Shuffle(Deck);
+        Shuffle(Deck);
     }
     while (i < count && Deck.size()) {
-        card = Deck[i];
+        card = Deck.back();
         player.deck.push_back(card);
-        // cout<<"Цдаляем.: "<<Deck[i].Color<<Deck[i].Value<<endl;
-        Deck.erase(Deck.begin() + i);
+        // cout<<"Цдаляем.: "<<Deck[i].color<<Deck[i].Value<<endl;
+        Deck.pop_back();
         i++;
     }
     //return;
 }
 
 //Рисуем одну карту. Указываем верхний левый и правый нижний
-void DrawCard(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, char color) {
-    int c = 5;
-    switch (color) {
+void DrawCard(Card card) {
+    int color = 0, value;
+    switch (card.color) {
         case 'R':
-            c = 0;
+            color = 0;
             break;
         case 'G':
-            c = 1;
+            color = 1;
             break;
         case 'B':
-            c = 2;
+            color = 2;
             break;
         case 'Y':
-            c = 3;
+            color = 3;
             break;
         case 'A':
-            c = 4;
+            color = 4;
             break;
     }
-    glBindTexture(GL_TEXTURE_2D, textures[c]);
+    value = card.Value;
+    glBindTexture(GL_TEXTURE_2D, textures[color][value]);
     glBegin(GL_QUADS);
     glTexCoord2d(0.0, 0.0);
-    glVertex3f(x1, y2, 0);
+    glVertex3f(card.x1, card.y2, 0);
     glTexCoord2d(1.0, 0.0);
-    glVertex3f(x2, y2, 0);
+    glVertex3f(card.x2, card.y2, 0);
     glTexCoord2d(1.0, 1.0);
-    glVertex3f(x2, y1, 0);
+    glVertex3f(card.x2, card.y1, 0);
     glTexCoord2d(0.0, 1.0);
-    glVertex3f(x1, y1, 0);
+    glVertex3f(card.x1, card.y1, 0);
 
     glEnd();
 }
@@ -124,15 +118,17 @@ void DrawCards(int player, Player &players) {
         y2 = 1 - hSide;
     }
     for (int i = 0; i < players.deck.size(); i++) {
-        if (player == 1)
-            DrawCard(x1, y1, x2, y2, players.deck[i].Color);
-        else
-            DrawCard(x1, y1, x2, y2, players.deck[i].Color);
-
         players.deck[i].x1 = x1;
         players.deck[i].x2 = x2;
         players.deck[i].y1 = y1;
         players.deck[i].y2 = y2;
+        //TODO отрисовка рубашки боту
+        if (player == 1)
+            DrawCard(players.deck[i]);
+        else
+            DrawCard(players.deck[i]);
+
+
         //cout<<players.deck[i].x1<<" "<<players.deck[i].x2;
 
         //узнает ряд,если =1, то второй
@@ -164,23 +160,26 @@ void Activity(){
     do{
         card = Deck[Deck.size()-i];
         i++;
-    }while(card.Color=='A');
+    }while(card.color=='A');
     Discard.push_back(card);
     Deck.pop_back();
 }
 void DrawActivity(){
-    GLfloat x1 = -wSide/2.0 ,
-            x2 = x1 + wSide,
-            y1 = hSide/2.0,
-            y2 = y1 - hSide;
-    char c = Discard[Discard.size()-1].Color;
-    DrawCard(x1,y1,x2,y2,c);
+    char c = Discard[Discard.size()-1].color;
+    Card card = Discard[Discard.size()-1];
+    card.x1 =-wSide/2.0;
+    card.x2 = card.x1 + wSide;
+    card.y1 = hSide/2.0;
+    card.y2 = card.y1 - hSide;
+    DrawCard(card);
 }
 void DrawDeck(){
-    GLfloat x1 = -wSide/2.0-9*wSide ,
-            x2 = x1 + wSide,
-            y1 = hSide/2.0,
-            y2 = y1 - hSide;
-    DrawCard(x1,y1,x2,y2,'*');
+    Card card = Deck.back();
+    card.x1 =-wSide/2.0-9*wSide;
+    card.x2 = card.x1 + wSide;
+    card.y1 = hSide/2.0;
+    card.y2 = card.y1 - hSide;
+    DrawCard(card);
+    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05, 1, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
 }
 
