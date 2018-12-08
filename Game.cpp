@@ -9,7 +9,6 @@ bool IsRight(Card card){
     }
     return false;
 }
-
 bool PushInDiscard(int i, Player &player)
 {
     if (i<0)
@@ -31,3 +30,9 @@ int Player2Chose(){
     }
  return -1;
 }
+void score(){
+    Player1.score=0;
+    for(int i=0;i<Player2.deck.size();i++){
+        Player1.score += Player2.deck[i].Value;
+    }
+};

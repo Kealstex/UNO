@@ -19,7 +19,6 @@ void InitDeck() {
         //InitCard('A', 14, 50);
     }
     Shuffle(Deck);
-    //SortIsInHand(Deck);
     //cout << Deck.size();
 }
 
@@ -40,7 +39,7 @@ void Shuffle(vector<Card> &v) {
 
 void SortIsInHand(vector<Card> &v) {
     for (int i = 0; i < v.size(); i++)
-        for (int j = i + 1; j < v.size()-1; j++)
+        for (int j = i + 1; j < v.size() - 1; j++)
             if (v[i].color > v[j].color) {
                 Card temp = v[i];
                 v[i] = v[j];
@@ -62,11 +61,9 @@ void more(int count, Player &player) {
     while (i < count && Deck.size()) {
         card = Deck.back();
         player.deck.push_back(card);
-        // cout<<"Цдаляем.: "<<Deck[i].color<<Deck[i].Value<<endl;
         Deck.pop_back();
         i++;
     }
-    //return;
 }
 
 //Рисуем одну карту. Указываем верхний левый и правый нижний
@@ -104,9 +101,9 @@ void DrawCard(Card card) {
     glEnd();
 }
 
-// отрисовка карт
+// отрисовка карты
 void DrawCards(int player, Player &players) {
-    GLfloat x1 = -1.0f, x2 = x1 + wSide, y1 = -hSide, y2 =  y1 - hSide;
+    GLfloat x1 = -1.0f, x2 = x1 + wSide, y1 = -hSide, y2 = y1 - hSide;
     GLfloat y = 0.0;   // счетчик ряда
     if (players.deck.size() < 20) {
         dx = (2.0f - players.deck.size() * wSide) / 2.0f;
@@ -123,14 +120,10 @@ void DrawCards(int player, Player &players) {
         players.deck[i].y1 = y1;
         players.deck[i].y2 = y2;
         //TODO отрисовка рубашки боту
-        if (player == 1)
-            DrawCard(players.deck[i]);
-        else
-            DrawCard(players.deck[i]);
-
-
-        //cout<<players.deck[i].x1<<" "<<players.deck[i].x2;
-
+        if (player == 1) {
+            DrawCard(players.deck[i]);}
+        else{
+            DrawCard(players.deck[i]);}
         //узнает ряд,если =1, то второй
         if (y >= 1.0) {
             players.deck[i - 20].y2 = -0.6f;
@@ -145,7 +138,7 @@ void DrawCards(int player, Player &players) {
             x2 = x1 + wSide;
             if (player == 1) {
                 y1 = -hSide - dy * y;
-                y2 = -2*hSide - dy * y;
+                y2 = -2 * hSide - dy * y;
             } else {
                 y1 = 1.0f - dy * y;
                 y2 = 1.0 - hSide - dy * y;
@@ -153,34 +146,76 @@ void DrawCards(int player, Player &players) {
         }
     }
 }
-void Activity(){
-    Card card; int i=1;
+
+void Activity() {
+    Card card;
+    int i = 1;
     //запомнаем последнюю
 
-    do{
-        card = Deck[Deck.size()-i];
+    do {
+        card = Deck[Deck.size() - i];
         i++;
-    }while(card.color=='A');
+    } while (card.color == 'A');
     Discard.push_back(card);
     Deck.pop_back();
 }
-void DrawActivity(){
-    char c = Discard[Discard.size()-1].color;
-    Card card = Discard[Discard.size()-1];
-    card.x1 =-wSide/2.0;
+
+void DrawActivity() {
+    Card card = Discard.back();
+    card.x1 = -wSide / 2.0;
     card.x2 = card.x1 + wSide;
-    card.y1 = hSide/2.0;
+    card.y1 = hSide / 2.0;
     card.y2 = card.y1 - hSide;
     DrawCard(card);
 }
-void DrawDeck(){
-    Card card = Deck.back();
-    card.x1 =-wSide/2.0-9*wSide;
-    card.x2 = card.x1 + wSide;
-    card.y1 = hSide/2.0;
-    card.y2 = card.y1 - hSide;
-    DrawCard(card);
 
-    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05, 0, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
+void DrawDeck(char color) {
+    Card card = Deck.back();
+    card.x1 = -wSide / 2.0 - 9 * wSide;
+    card.x2 = card.x1 + wSide;
+    card.y1 = hSide / 2.0;
+    card.y2 = card.y1 - hSide;
+    //если нужно отрисовать рубашкой,иначе рисует своим цветом
+    if(color=='A'){
+        card.color = color;
+        card.Value = 0;
+    }
+    DrawCard(card);
+    renderBitmapString(-wSide / 2.0 - 9 * wSide, hSide / 2.0 + 0.05, 1, GLUT_BITMAP_TIMES_ROMAN_24,
+                       string("Deck size:") + to_string(Deck.size()));
+}
+void renderBitmapString(float x, float y, float z, void *font, string String)
+{
+    glRasterPos3f(x, y, z);
+    for (int i = 0; i < String.size(); i++) {
+        glutBitmapCharacter(font, String[i]);
+    }
+}
+//рисуем кнопку
+void DrawButton(){
+    Card card;
+    card.color='A';
+    card.Value=4;
+    card.x1 = 0.5f,
+    card.x2 = 0.5f +wSide;
+    card.y1 = wSide;
+    card.y2 = 0;
+    //стрелка вверх
+    DrawCard(card);
+    // стрелка вниз
+    card.y2 = 0;
+    card.y1 = -wSide;
+    DrawCard(card);
+}
+void DrawBackground(int color){
+    Card card;
+    card.x1 = -1;
+    card.x2 = 1;
+    card.y1 = 1;
+    card.y2 = -1;
+    card.color = 'A';
+    card.Value = color;
+    DrawCard(card);
+    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05, 1, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
 }
 
