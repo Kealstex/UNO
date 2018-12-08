@@ -46,4 +46,5 @@ void DrawActivity();                                                         // 
 void DrawDeck(char color);                                                             // Отрисовывает колоду
 void renderBitmapString(float x, float y, float z, void *font, string String); // функция вывода текста
 void DrawButton();                                                              //рисуем кнопку
+void DrawBackground(int color);                                                          //Рисуем фон
 #endif //UNTITLED1_CARD_H

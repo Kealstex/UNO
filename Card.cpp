@@ -207,5 +207,14 @@ void DrawButton(){
     card.y1 = -wSide;
     DrawCard(card);
 }
-
+void DrawBackground(int color){
+    Card card;
+    card.x1 = -1;
+    card.x2 = 1;
+    card.y1 = 1;
+    card.y2 = -1;
+    card.color = 'A';
+    card.Value = color;
+    DrawCard(card);
+}
 

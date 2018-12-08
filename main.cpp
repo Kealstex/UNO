@@ -88,7 +88,7 @@ int IsCard() {
 }
 
 //проверяет на нажатие по колоде
-bool IsDeck() {
+bool isDeck() {
     Card card = Deck.back();
     card.x1 = -wSide / 2.0 - 9 * wSide;
     card.x2 = card.x1 + wSide;
@@ -100,15 +100,33 @@ bool IsDeck() {
     }
     return false;
 }
+
 //Если нажата стрелка вверх -> ходит. Иначе забирает в руких
-bool isButton(){
-    if(getX() >= 0.5f && getX() <0.5f+wSide &&
-    getY()>=-wSide && getY()<=wSide){
-        cout<<"Button clicked."<<endl;
+bool isButton() {
+    if (getX() >= 0.5f && getX() < 0.5f + wSide &&
+        getY() >= -wSide && getY() <= wSide) {
+        cout << "Button clicked." << endl;
         return true;
     }
     return false;
-};                                                                //проверяет на нажатие. Если нажата стрелка вверз -> ходит. Иначе забирает в руки
+};
+
+bool isNewGame() {
+    if (getX() >= -0.9 && getX() <= -0.13 &&
+        getY() >= -0.84 && getY() <= -0.55) {
+        return true;
+    } else return false;
+}
+
+bool isExit() {
+    if (getX() >= 0.125 && getX() <= 0.9 &&
+        getY() <= -0.55 && getY() >= -0.84) {
+        return true;
+    }
+    return false;
+}
+
+
 // получаем координаты если нажата ЛКМ
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
@@ -128,7 +146,6 @@ void display() {
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    cout<<state<<endl;
     //начало игры
     if (state == 0) {
         //очистка колод
@@ -136,7 +153,7 @@ void display() {
         //инициализация новой колоды
         InitDeck();
         //раздача по 7 карт
-        more(7, Player1);
+        more(1, Player1);
         more(7, Player2);
         //достаем первую активную карту
         Activity();
@@ -153,7 +170,7 @@ void display() {
             //выключается свойство карты
             triger = false;
         }
-        //Если активная карта - возьми+2
+            //Если активная карта - возьми+2
         else if ((Discard.back().Value == 11) && triger) {
             //cout << "Player 1 deactivate card 11" << endl;
             //игрок берет две карты и может походить
@@ -161,28 +178,19 @@ void display() {
             state = 1;
             //выключается свойство карты
             triger = false;
-        }
-        else {
+        } else {
             //если нажал по карте - проверить правила
             lastId = IsCard();
             if (lastId > -1) {
                 state = 2;
                 //cout << "OK card is OK" << endl;
             }
-            //Если нажал по колоде
-            else if (IsDeck()) {
+                //Если нажал по колоде
+            else if (isDeck()) {
                 //Кладет карту из колоды, если она удовлетворяет правилам
                 if (IsRight(Deck.back())) {
-                    cout<<"state = 4";
+                    cout << "state = 4";
                     state = 4;
-//                   Card card;
-//                    //рисуем кнопку
-//                    DrawButton();
-//                    sleep(3);
-//                    if (getX())
-//                    card = Deck.back();
-//                    Discard.push_back(card);
-//                    Deck.pop_back();
                     // cout << "Player 1 Give card " << endl;
                     // cout << "Player 1 Push card " << card.color << " " << card.Value << endl;*/
                 } else {
@@ -197,7 +205,7 @@ void display() {
         yPos = 9999;
         //cout<<"x="<<getX()<<"y="<<getY()<<"\n";
     }
-    //Проверка на возможность хода
+        //Проверка на возможность хода
     else if (state == 2) {
         //если выбранная карта соответствует правилам - скинуть её в отбой
         if (IsRight(Player1.deck[lastId])) {
@@ -205,7 +213,7 @@ void display() {
             //если карта специальная:
             if (Discard.back().Value >= 10 && Discard.back().Value <= 12) {
                 triger = true;
-              //  cout << "Player 1 activate card 10||11||12" << endl;
+                //  cout << "Player 1 activate card 10||11||12" << endl;
             }
             lastId = -1;
             state = 3;
@@ -217,7 +225,7 @@ void display() {
             state = 5;
         }
     }
-    //если ход компа
+        //если ход компа
     else if (state == 3) {
         sleep(1);
         //Если карта специальная ( пропуск хода )
@@ -226,14 +234,13 @@ void display() {
             cout << "Player 2 deactivate card 10||12" << endl;
             triger = false;
         }
-        //Если карта специальная (возьми+2)
+            //Если карта специальная (возьми+2)
         else if ((Discard.back().Value == 11) && triger) {
             more(2, Player2);
             cout << "Player 2 deactivate card 11" << endl;
             state = 3;
             triger = false;
-        }
-        else {
+        } else {
             //если нет подохядщей карты -> берет одну;
             if (Player2Chose() == -1) {
                 cout << "Player 2 Give card " << endl;
@@ -256,15 +263,14 @@ void display() {
 
     }
     //нажали по колоде. взятая карта может быть сыграна
-    if (state == 4 ){
+    if (state == 4) {
         color = 'B';
         DrawButton();
         //DrawDeck(color);
-        if(isButton()){
-            if(getY()<0){
-                more(1,Player1);
-            }
-            else {
+        if (isButton()) {
+            if (getY() < 0) {
+                more(1, Player1);
+            } else {
                 Card card = Deck.back();
                 Discard.push_back(card);
                 Deck.pop_back();
@@ -274,14 +280,25 @@ void display() {
         }
 
     }
-     if (state == 5) {
-        string str = (Player1.deck.size() == 0 ? string("You win!") : string("You are loser!"));
-        renderBitmapString(0, 0, 1, GLUT_BITMAP_TIMES_ROMAN_24, str);
+    if (state == 5) {
+        if (Player1.deck.size() == 0) {
+            // текстура в случае выйгрыша
+            DrawBackground(10);
+            score();
+            cout<<Player1.score<<endl;
+        } else {
+            // текстура в случае пройгрыша
+            DrawBackground(11);
+        }
         glFlush();
-        glutSwapBuffers();
-        glutPostRedisplay();
-        sleep(5);
-        exit(0);
+        if (isNewGame()) {
+            state = 0;
+        }
+        if (isExit()) {
+            exit(0);
+        }
+
+
     } else {
         SortIsInHand(Player1.deck);
         DrawDeck(color);
@@ -294,7 +311,6 @@ void display() {
     glFlush();
     glutSwapBuffers();
     glutPostRedisplay();
-    //sleep(1);
 }
 
 int main(int argc, char *argv[]) {
@@ -310,7 +326,6 @@ int main(int argc, char *argv[]) {
     glutCreateWindow("UNO");
     glEnable(GL_DEPTH_TEST);
     InitWindow();
-    //glutTimerFunc(timer,)
     glutDisplayFunc(display);
     glutMouseFunc(mouse);
     LoadTextures();
