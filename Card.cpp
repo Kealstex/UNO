@@ -15,11 +15,10 @@ void InitDeck() {
 
             InitCard(color[j], i % 13, (i % 13 > 9) ? 20 : i % 13);
         }
-        //InitCard('A', 13, 50);
-        //InitCard('A', 14, 50);
+        InitCard('A', 13, 50);
+        InitCard('A', 14, 50);
     }
     Shuffle(Deck);
-    //cout << Deck.size();
 }
 
 void InitCard(char color, int value, int score) {
@@ -29,7 +28,13 @@ void InitCard(char color, int value, int score) {
     card.Score = score;
     Deck.push_back(card);
 }
-
+//очищаем колоды
+void DeckClear() {
+    Deck.clear();
+    Discard.clear();
+    Player1.deck.clear();
+    Player2.deck.clear();
+}
 // тусовка карт
 void Shuffle(vector<Card> &v) {
     srand(unsigned(time(nullptr)));
@@ -53,6 +58,9 @@ void more(int count, Player &player) {
     Card card;
     if (Deck.size() == 0) {
         while (Discard.size() != 1) {
+            if (Discard[0].color!='A' && (Discard[0].Value == 13 || Discard[0].Value == 14)){
+                Discard[0].color = 'A';
+            }
             Deck.push_back(Discard[0]);
             Discard.erase(Discard.begin());
         }
@@ -170,7 +178,7 @@ void DrawActivity() {
 }
 
 void DrawDeck(char color) {
-    Card card = Deck.back();
+    Card card = Deck[Deck.size() -1];
     card.x1 = -wSide / 2.0 - 9 * wSide;
     card.x2 = card.x1 + wSide;
     card.y1 = hSide / 2.0;
@@ -217,4 +225,13 @@ void DrawBackground(int color){
     card.Value = color;
     DrawCard(card);
 }
-
+void DrawChoseColor(){
+    Card chose;
+    chose.x1 = 0.3f;
+    chose.x2 = 0.3f + 4*wSide;
+    chose.y1 = wSide;
+    chose.y2 = -wSide;
+    chose.color = 'A';
+    chose.Value = 12;
+    DrawCard(chose);
+}

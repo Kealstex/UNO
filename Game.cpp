@@ -4,7 +4,8 @@
 
 #include "Game.h"
 bool IsRight(Card card){
-    if(card.color==Discard[Discard.size()-1].color || card.Value == Discard[Discard.size()-1].Value){
+    if(card.color==Discard.back().color || card.Value == Discard.back().Value
+    || (card.color== 'A' && Discard.back().color!='A')){
         return true;
     }
     return false;
@@ -25,6 +26,22 @@ bool PushInDiscard(int i, Player &player)
 int Player2Chose(){
     for (int i = 0; i < Player2.deck.size(); i++) {
         if (IsRight(Player2.deck[i])) {
+            if(Player2.deck[i].color == 'A' && (Player2.deck[i].Value == 13 || Player2.deck[i].Value == 14)){
+               switch(rand()%4){
+                   case 0:
+                       Player2.deck[i].color = 'R';
+                       break;
+                   case 1:
+                       Player2.deck[i].color = 'G';
+                       break;
+                   case 2:
+                       Player2.deck[i].color = 'B';
+                       break;
+                   case 3:
+                       Player2.deck[i].color = 'Y';
+                       break;
+               }
+            }
             return i;
         }
     }
