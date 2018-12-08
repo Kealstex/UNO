@@ -200,8 +200,6 @@ void DrawButton(){
     card.x2 = 0.5f +wSide;
     card.y1 = wSide;
     card.y2 = 0;
-    //Отрисовать карту вниз рубашкой
-    DrawDeck('B');
     //стрелка вверх
     DrawCard(card);
     // стрелка вниз
