@@ -180,6 +180,7 @@ void DrawDeck(){
     card.y1 = hSide/2.0;
     card.y2 = card.y1 - hSide;
     DrawCard(card);
-    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05, 1, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
+
+    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05, 0, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
 }
 

@@ -1,5 +1,6 @@
-#include <GL/freeglut.h>
-#include <zconf.h>
+#include <GL/glut.h>
+
+//#include <zconf.h>
 #include "SOIL/SOIL.h"
 #include "Game.h"
 
@@ -35,7 +36,7 @@ void LoadTextures() {
     for (int i = 0; i < 5; i++) {
         str = string("textures/texture") + std::to_string(i) + string("-");
         for (int j = 0; j < 15; j++) {
-            string str1 = str + std::to_string(j) + string(".png");
+            string str1 = str + std::to_string(j) + string("-min.png");
             textures[i][j] = SOIL_load_OGL_texture(
                     str1.c_str(),
                     SOIL_LOAD_AUTO,
@@ -123,8 +124,10 @@ void display() {
     //cout << state << " " << Deck.size() << " " << Discard.size() << " " << Player1.deck.size() << " " << Player2.deck.size() << endl;
     hScreen = glutGet(GLUT_WINDOW_HEIGHT);
     wScreen = glutGet(GLUT_WINDOW_WIDTH);
+    //glColor3f(0.0, 0.0, 0.0);
+    //glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    //glColor3f(1.0, 1.0, 1.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
@@ -229,12 +232,13 @@ void display() {
 
     }
     if (state == 5) {
+
         string str = (Player1.deck.size() == 0 ? string("You win!") : string("You are loser!"));
-        renderBitmapString(0, 0, 1, GLUT_BITMAP_TIMES_ROMAN_24, str);
+        renderBitmapString(0, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24, str);
         glFlush();
         glutSwapBuffers();
         glutPostRedisplay();
-        sleep(5);
+        Sleep(5000);
         exit(0);
     } else {
         SortIsInHand(Player1.deck);
@@ -253,6 +257,7 @@ void display() {
 }
 
 int main(int argc, char *argv[]) {
+    cout << "1";
     Player1.PNumber = 1;
     Player2.PNumber = 2;
     glutInit(&argc, argv);
