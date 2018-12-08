@@ -9,7 +9,6 @@ bool IsRight(Card card){
     }
     return false;
 }
-
 bool PushInDiscard(int i, Player &player)
 {
     if (i<0)
