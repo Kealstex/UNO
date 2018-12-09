@@ -195,12 +195,17 @@ void display() {
             //если нажал по карте - проверить правила
             lastId = isCard();
             if (lastId > -1 && Player1.deck[lastId].color == 'A') {
+                /*if(Player1.deck[lastId].Value==14){
+                    triger = true;
+                }
+                lastId = -1;*/
                 state = 6;
             }
                 //Если нажал по колоде
             else if (isDeck()) {
                 //Кладет карту из колоды, если она удовлетворяет правилам
                 if (IsRight(Deck.back())) {
+                    lastId=-1;
                     state = 4;
                 } else {
                     // если нажал на колоде - добавить карту
@@ -230,7 +235,7 @@ void display() {
         } else {
             state = 1;
         }
-        if (Player1.deck.size() == 0) {
+        if(Player1.deck.size() == 0) {
             cout << "You win!";
             state = 5;
         }
@@ -283,19 +288,23 @@ void display() {
                 more(1, Player1);
             } else {
                 Card card = Deck.back();
-                if (Deck.back().color == 'A') {
-                    if (Deck.back().Value == 14){
-                        triger = true;
-                    }
-                    lastId = -1;
-                    state = 6;
-                }else {
+                if(Deck.back().Value >= 10 && Deck.back().Value<=12 || Deck.back().Value==14 ){
+                    triger = true;
+                }
+                if (Deck.back().color != 'A') {
                     Discard.push_back(card);
                     Deck.pop_back();
+                    state = 3;
+                }
+                else {
+                    //cбить координаты (сохраняется с кнопки)
+                    xPos=-100;
+                    yPos=-100;
+                    lastId = -1;
+                    state = 6;
                 }
             }
             color = 'A';
-            state = 3;
         }
 
     }
@@ -305,17 +314,18 @@ void display() {
         chose = isChoseColor();
         if (chose) {
             Card card;
-            cout<<lastId<<endl;
+            //cout<<lastId<<endl;
             if(lastId >-1){
                 card = Player1.deck[lastId];
             }
             else card = Deck.back();
             card.color = chose;
-            /*if (card.Value == 14) {
+            if (card.Value == 14) {
                 triger = true;
-            }*/
-            if(lastId>-1)
+            }
+            if(lastId>-1){
                 Player1.deck.erase(Player1.deck.begin() + lastId);
+            }
             else Deck.pop_back();
             Discard.push_back(card);
             state = 3;
