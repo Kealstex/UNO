@@ -131,7 +131,10 @@ void DrawCards(int player, Player &players) {
         if (player == 1) {
             DrawCard(players.deck[i]);}
         else{
-            DrawCard(players.deck[i]);}
+            Card card = players.deck[i];
+            card.color = 'A';
+            card.Value = 0;
+            DrawCard(card);}
         //узнает ряд,если =1, то второй
         if (y >= 1.0) {
             players.deck[i - 20].y2 = -0.6f;

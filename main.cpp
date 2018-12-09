@@ -21,10 +21,11 @@ GLfloat wSide = 0.1f, hSide = 0.35f;             // сторoна карты - �
 GLfloat dx = 0.05f, dy = 0.2f;                        // расстояние между картами
 double hScreen, wScreen;                              // монитор
 bool triger = true;                                   // срабатывание активных карт
+bool readScore = true;
 char color = 'A';                                      //Cторона показа колоы. А - рубашка
 GLuint textures[5][15];
 int scoreArr[10];
-fstream fout("score.bin", ios_base::binary | ios_base::out);
+fstream fin;
 
 using namespace std;
 
@@ -162,8 +163,8 @@ void display() {
         //инициализация новой колоды
         InitDeck();
         //раздача по 7 карт
-        more(7, Player1);
-        more(7, Player2);
+        more(1, Player1);
+        more(10, Player2);
         //достаем первую активную карту
         Activity();
         state = 1; // ходит первый игрок
@@ -204,7 +205,7 @@ void display() {
             else if (isDeck()) {
                 //Кладет карту из колоды, если она удовлетворяет правилам
                 if (IsRight(Deck.back())) {
-                    lastId=-1;
+                    lastId = -1;
                     state = 4;
                 } else {
                     // если нажал на колоде - добавить карту
@@ -234,7 +235,7 @@ void display() {
         } else {
             state = 1;
         }
-        if(Player1.deck.size() == 0) {
+        if (Player1.deck.size() == 0) {
             cout << "You win!";
             state = 5;
         }
@@ -288,18 +289,17 @@ void display() {
                 state = 3;
             } else {
                 Card card = Deck.back();
-                if(Deck.back().Value >= 10 && Deck.back().Value<=12 || Deck.back().Value==14 ){
+                if (Deck.back().Value >= 10 && Deck.back().Value <= 12 || Deck.back().Value == 14) {
                     triger = true;
                 }
                 if (Deck.back().color != 'A') {
                     Discard.push_back(card);
                     Deck.pop_back();
                     state = 3;
-                }
-                else {
+                } else {
                     //cбить координаты (сохраняется с кнопки)
-                    xPos=-100;
-                    yPos=-100;
+                    xPos = -100;
+                    yPos = -100;
                     lastId = -1;
                     state = 6;
                 }
@@ -315,18 +315,16 @@ void display() {
         if (chose) {
             Card card;
             //cout<<lastId<<endl;
-            if(lastId >-1){
+            if (lastId > -1) {
                 card = Player1.deck[lastId];
-            }
-            else card = Deck.back();
+            } else card = Deck.back();
             card.color = chose;
             if (card.Value == 14) {
                 triger = true;
             }
-            if(lastId>-1){
+            if (lastId > -1) {
                 Player1.deck.erase(Player1.deck.begin() + lastId);
-            }
-            else Deck.pop_back();
+            } else Deck.pop_back();
             Discard.push_back(card);
             state = 3;
         }
@@ -338,24 +336,25 @@ void display() {
             // текстура в случае выйгрыша
             DrawBackground(10);
             score();
-            if (Player1.score > scoreArr[9]) {
+            if (Player1.score > scoreArr[9] && readScore) {
                 scoreArr[9] = Player1.score;
+                int temp;
                 for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < 10  - 1; j++) {
+                    for (int j = 0; j < 10 - i - 1; j++) {
                         if (scoreArr[j] < scoreArr[j + 1]) {
-                            swap(scoreArr[j], scoreArr[j + 1]);
+                            temp = scoreArr[j];
+                            scoreArr[j] = scoreArr[j + 1];
+                            scoreArr[j + 1] = temp;
                         }
                     }
                 }
-                //Запись в файл
+                readScore = false;
+                fin.open("score.txt");
                 for (int i = 0; i < 10; i++) {
-                 //   scoreArr[i]=i;
-                    int a = scoreArr[i];
-                    fout.write((char*)&a, sizeof(int));
-                    cout<<scoreArr[i]<<endl;
-                   //renderBitmapString(-0.85, 0.75-i*0.12,1,GLUT_BITMAP_TIMES_ROMAN_24,to_string(a));
+                    fin << scoreArr[i];
+                    fin << " ";
                 }
-                fout.close();
+                fin.close();
 
             }
         } else {
@@ -377,13 +376,19 @@ void display() {
         }
         DrawBackground(8);
 
-        fstream fin("score.bin",ios_base::binary | ios_base::in);
+        /*fstream fin("score.bin",ios_base::binary | ios_base::in);
         for (int i = 0; i < 10; i++) {
             int a;
             fin.read((char*)&a, sizeof(int));
             //cout<<scoreArr[i]<<endl;
             cout<<a<<endl;
             renderBitmapString(-0.85, 0.75-i*0.12,1,GLUT_BITMAP_TIMES_ROMAN_24,to_string(a));
+        }
+        fin.close();*/
+        fin.open("score.txt");
+        for (int i = 0; i < 10; i++) {
+            fin >> scoreArr[i];
+            renderBitmapString(-0.85, 0.75 - i * 0.12, 1, GLUT_BITMAP_TIMES_ROMAN_24, to_string(scoreArr[i]));
         }
         fin.close();
         if (isNewGame()) {
