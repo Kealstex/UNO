@@ -23,8 +23,8 @@ double hScreen, wScreen;                              // монитор
 bool triger = true;                                   // срабатывание активных карт
 char color = 'A';                                      //Cторона показа колоы. А - рубашка
 GLuint textures[5][15];
-fstream file("score.txt", ios_base::out | ios_base::in);
 int scoreArr[10];
+fstream fout("score.bin", ios_base::binary | ios_base::out);
 
 using namespace std;
 
@@ -147,7 +147,6 @@ void mouse(int button, int state, int x, int y) {
 
 // display() Callback function
 void display() {
-    cout<<state<<endl;
     hScreen = glutGet(GLUT_WINDOW_HEIGHT);
     wScreen = glutGet(GLUT_WINDOW_WIDTH);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -174,10 +173,10 @@ void display() {
     if (state == 1) {
         //Если активная карта - специальная (смена хода или пропуск хода)
         if ((Discard.back().Value == 10 || Discard.back().Value == 12) && triger) {
-            //Игрок пропускает ход, ход переходит
-            state = 3;
             //выключается свойство карты
             triger = false;
+            //Игрок пропускает ход, ход переходит
+            state = 3;
         }
             //Если активная карта - возьми+2
         else if ((Discard.back().Value == 11) && triger) {
@@ -286,6 +285,7 @@ void display() {
         if (isButton()) {
             if (getY() < 0) {
                 more(1, Player1);
+                state = 3;
             } else {
                 Card card = Deck.back();
                 if(Deck.back().Value >= 10 && Deck.back().Value<=12 || Deck.back().Value==14 ){
@@ -341,16 +341,22 @@ void display() {
             if (Player1.score > scoreArr[9]) {
                 scoreArr[9] = Player1.score;
                 for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < 10 - i - 1; j++) {
+                    for (int j = 0; j < 10  - 1; j++) {
                         if (scoreArr[j] < scoreArr[j + 1]) {
                             swap(scoreArr[j], scoreArr[j + 1]);
                         }
                     }
                 }
+                //Запись в файл
                 for (int i = 0; i < 10; i++) {
-                    file << scoreArr[i];
-                    file << " ";
+                 //   scoreArr[i]=i;
+                    int a = scoreArr[i];
+                    fout.write((char*)&a, sizeof(int));
+                    cout<<scoreArr[i]<<endl;
+                   //renderBitmapString(-0.85, 0.75-i*0.12,1,GLUT_BITMAP_TIMES_ROMAN_24,to_string(a));
                 }
+                fout.close();
+
             }
         } else {
             // текстура в случае пройгрыша
@@ -370,10 +376,16 @@ void display() {
             InitDeck();
         }
         DrawBackground(8);
+
+        fstream fin("score.bin",ios_base::binary | ios_base::in);
         for (int i = 0; i < 10; i++) {
-            file >> scoreArr[i];
+            int a;
+            fin.read((char*)&a, sizeof(int));
+            //cout<<scoreArr[i]<<endl;
+            cout<<a<<endl;
+            renderBitmapString(-0.85, 0.75-i*0.12,1,GLUT_BITMAP_TIMES_ROMAN_24,to_string(a));
         }
-        file.close();
+        fin.close();
         if (isNewGame()) {
             state = 0;
         }
