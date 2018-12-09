@@ -169,6 +169,9 @@ void Activity() {
 }
 
 void DrawActivity() {
+    if(!Discard.size()){
+        return;
+    }
     Card card = Discard.back();
     card.x1 = -wSide / 2.0;
     card.x2 = card.x1 + wSide;

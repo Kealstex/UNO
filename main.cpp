@@ -2,10 +2,12 @@
 #include <zconf.h>
 #include "SOIL/SOIL.h"
 #include "Game.h"
+#include <fstream>
 
 vector<Card> Deck, Discard;      // колода сброса и колода игровая;
 Player Player1, Player2;        // игроки
-int state = 0;                    // стадии
+int state = 7;                    // стадии
+//7 - меню;
 //0 - начало
 //1 - ход мой
 //2 - проверка на правила;
@@ -21,6 +23,8 @@ double hScreen, wScreen;                              // монитор
 bool triger = true;                                   // срабатывание активных карт
 char color = 'A';                                      //Cторона показа колоы. А - рубашка
 GLuint textures[5][15];
+fstream file("score.txt", ios_base::out | ios_base::in);
+int scoreArr[10];
 
 using namespace std;
 
@@ -47,7 +51,6 @@ void LoadTextures() {
             );
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            //cout << str1 << endl;
         }
     }
 }
@@ -72,7 +75,6 @@ int isCard() {
     for (int i = 0; i < Player1.deck.size(); i++) {
         if (getX() >= Player1.deck[i].x1 && getX() <= Player1.deck[i].x2 &&
             getY() <= Player1.deck[i].y1 && getY() >= Player1.deck[i].y2) {
-            //cout<<Player1.deck[i].color<<endl;
             return i;
         }
 
@@ -118,21 +120,23 @@ bool isExit() {
     }
     return false;
 }
-char isChoseColor(){
-    if( getY()>=0.095 || getY()<=-0.095 ){
+
+char isChoseColor() {
+    if (getY() >= 0.095 || getY() <= -0.095) {
         return 0;
     }
-    if (getX()<=0.4 && getX()>=0.3){
+    if (getX() <= 0.4 && getX() >= 0.3) {
         return 'R';
-    } else if (getX()<=0.5 && getX()>=0.4){
+    } else if (getX() <= 0.5 && getX() >= 0.4) {
         return 'G';
-    } else if(getX()<=0.6 && getX()>=0.5){
+    } else if (getX() <= 0.6 && getX() >= 0.5) {
         return 'B';
-    } else if(getX()<=0.7 && getX()>=0.6){
+    } else if (getX() <= 0.7 && getX() >= 0.6) {
         return 'Y';
     }
     return 0;
 }
+
 // получаем координаты если нажата ЛКМ
 void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
@@ -143,7 +147,7 @@ void mouse(int button, int state, int x, int y) {
 
 // display() Callback function
 void display() {
-    //cout << state << " " << Deck.size() << " " << Discard.size() << " " << Player1.deck.size() << " " << Player2.deck.size() << endl;
+    cout<<state<<endl;
     hScreen = glutGet(GLUT_WINDOW_HEIGHT);
     wScreen = glutGet(GLUT_WINDOW_WIDTH);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -159,7 +163,7 @@ void display() {
         //инициализация новой колоды
         InitDeck();
         //раздача по 7 карт
-        more(20, Player1);
+        more(7, Player1);
         more(7, Player2);
         //достаем первую активную карту
         Activity();
@@ -170,7 +174,6 @@ void display() {
     if (state == 1) {
         //Если активная карта - специальная (смена хода или пропуск хода)
         if ((Discard.back().Value == 10 || Discard.back().Value == 12) && triger) {
-            //cout << "Player 1 deactivate card 10||12" << endl;
             //Игрок пропускает ход, ход переходит
             state = 3;
             //выключается свойство карты
@@ -178,7 +181,6 @@ void display() {
         }
             //Если активная карта - возьми+2
         else if ((Discard.back().Value == 11) && triger) {
-            //cout << "Player 1 deactivate card 11" << endl;
             //игрок берет две карты и может походить
             more(2, Player1);
             state = 1;
@@ -192,30 +194,26 @@ void display() {
         } else {
             //если нажал по карте - проверить правила
             lastId = isCard();
-            if (lastId > -1 && Player1.deck[lastId].color=='A') {
+            if (lastId > -1 && Player1.deck[lastId].color == 'A') {
                 state = 6;
             }
                 //Если нажал по колоде
             else if (isDeck()) {
                 //Кладет карту из колоды, если она удовлетворяет правилам
                 if (IsRight(Deck.back())) {
-                    cout << "state = 4";
                     state = 4;
-                    // cout << "Player 1 Give card " << endl;
-                    // cout << "Player 1 Push card " << card.color << " " << card.Value << endl;*/
                 } else {
                     // если нажал на колоде - добавить карту
                     more(1, Player1);
                     state = 3;
                 }
 
-            }else {state = 2;
-                //cout << "OK card is OK" << endl;
+            } else {
+                state = 2;
             }
         }
         xPos = -100;
         yPos = -100;
-        //cout<<"x="<<getX()<<"y="<<getY()<<"\n";
     }
         //Проверка на возможность хода
     else if (state == 2) {
@@ -225,7 +223,6 @@ void display() {
             //если карта специальная или черная +4:
             if ((Discard.back().Value >= 10 && Discard.back().Value <= 12) || Discard.back().Value == 14) {
                 triger = true;
-                //  cout << "Player 1 activate card 10||11||12" << endl;
             }
 
             lastId = -1;
@@ -253,7 +250,7 @@ void display() {
             cout << "Player 2 deactivate card 11" << endl;
             state = 3;
             triger = false;
-        } else if (Discard.back().Value == 14 && triger) {
+        } else if ((Discard.back().Value == 14) && triger) {
             more(4, Player2);
             triger = false;
         } else {
@@ -265,14 +262,13 @@ void display() {
             //Card card = Discard.back();
             //если подходящая карта есть(появилась после взятия) -> кладет в отбой
             if (PushInDiscard(Player2Chose(), Player2)) {
-                if (Discard.back().Value >= 10 && Discard.back().Value <= 12 || Discard.back().Value == 14) {
+                if ((Discard.back().Value >= 10 && Discard.back().Value <= 12) || Discard.back().Value == 14) {
                     triger = true;
-                    cout << "Player 2 activate card 10||11||12" << endl;
+                    cout << "Player 2 activate card 10||11||12||14" << endl;
                 }
             }
             state = 1;
             if (Player2.deck.size() == 0) {
-                cout << "You are loser!";
                 state = 5;
             }
         }
@@ -287,8 +283,16 @@ void display() {
                 more(1, Player1);
             } else {
                 Card card = Deck.back();
-                Discard.push_back(card);
-                Deck.pop_back();
+                if (Deck.back().color == 'A') {
+                    if (Deck.back().Value == 14){
+                        triger = true;
+                    }
+                    lastId = -1;
+                    state = 6;
+                }else {
+                    Discard.push_back(card);
+                    Deck.pop_back();
+                }
             }
             color = 'A';
             state = 3;
@@ -299,10 +303,20 @@ void display() {
         DrawChoseColor();
         char chose;
         chose = isChoseColor();
-        if(chose){
-            Card card = Player1.deck[lastId];
+        if (chose) {
+            Card card;
+            cout<<lastId<<endl;
+            if(lastId >-1){
+                card = Player1.deck[lastId];
+            }
+            else card = Deck.back();
             card.color = chose;
-            Player1.deck.erase(Player1.deck.begin()+lastId);
+            /*if (card.Value == 14) {
+                triger = true;
+            }*/
+            if(lastId>-1)
+                Player1.deck.erase(Player1.deck.begin() + lastId);
+            else Deck.pop_back();
             Discard.push_back(card);
             state = 3;
         }
@@ -314,6 +328,20 @@ void display() {
             // текстура в случае выйгрыша
             DrawBackground(10);
             score();
+            if (Player1.score > scoreArr[9]) {
+                scoreArr[9] = Player1.score;
+                for (int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 10 - i - 1; j++) {
+                        if (scoreArr[j] < scoreArr[j + 1]) {
+                            swap(scoreArr[j], scoreArr[j + 1]);
+                        }
+                    }
+                }
+                for (int i = 0; i < 10; i++) {
+                    file << scoreArr[i];
+                    file << " ";
+                }
+            }
         } else {
             // текстура в случае пройгрыша
             DrawBackground(11);
@@ -327,6 +355,21 @@ void display() {
         }
 
 
+    } else if (state == 7) {
+        if (!Deck.size()) {
+            InitDeck();
+        }
+        DrawBackground(8);
+        for (int i = 0; i < 10; i++) {
+            file >> scoreArr[i];
+        }
+        file.close();
+        if (isNewGame()) {
+            state = 0;
+        }
+        if (isExit()) {
+            exit(0);
+        }
     } else {
         SortIsInHand(Player1.deck);
         DrawDeck(color);
