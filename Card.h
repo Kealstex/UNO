@@ -44,7 +44,9 @@ void DrawCard(Card card);
 void Activity();                                                             // кладет верхнюю карту из колоды в сброс (в начале игры)
 void DrawActivity();                                                         // Отрисовывает активную карту
 void DrawDeck(char color);                                                             // Отрисовывает колоду
-void renderBitmapString(float x, float y, float z, void *font, string String); // функция вывода текста
-void DrawButton();                                                              //рисуем кнопку
-void DrawBackground(int color);                                                          //Рисуем фон
+void renderBitmapString(float x, float y, float z, void *font, string String);// функция вывода текста
+void DrawButton();                                                            //рисуем кнопку
+void DrawBackground(int color);                                  //Закраска фона
+void DeckClear();                                                //Очистка колод перед выходом
+void DrawChoseColor();                                           //Рисуем для выбора карты
 #endif //UNTITLED1_CARD_H
