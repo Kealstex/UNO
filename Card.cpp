@@ -56,7 +56,7 @@ void SortIsInHand(vector<Card> &v) {
 void more(int count, Player &player) {
     int i = 0;
     Card card;
-    if (Deck.size() == 0) {
+    if (Deck.size() < count) {
         while (Discard.size() != 1) {
             if (Discard[0].color!='A' && (Discard[0].Value == 13 || Discard[0].Value == 14)){
                 Discard[0].color = 'A';
@@ -195,7 +195,7 @@ void DrawDeck(char color) {
         card.Value = 0;
     }
     DrawCard(card);
-    renderBitmapString(-wSide / 2.0 - 9 * wSide, hSide / 2.0 + 0.05, 1, GLUT_BITMAP_TIMES_ROMAN_24,
+    renderBitmapString(-wSide / 2.0 - 9 * wSide, hSide / 2.0 + 0.05, 0, GLUT_BITMAP_TIMES_ROMAN_24,
                        string("Deck size:") + to_string(Deck.size()));
 }
 void renderBitmapString(float x, float y, float z, void *font, string String)
@@ -230,7 +230,7 @@ void DrawBackground(int color){
     card.color = 'A';
     card.Value = color;
     DrawCard(card);
-    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05, 1, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
+    renderBitmapString(-wSide/2.0-9*wSide, hSide/2.0+0.05,0, GLUT_BITMAP_TIMES_ROMAN_24, string("Deck size:") + to_string(Deck.size()));
 }
 void DrawChoseColor(){
     Card chose;

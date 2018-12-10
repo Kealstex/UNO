@@ -43,7 +43,7 @@ void LoadTextures() {
     for (int i = 0; i < 5; i++) {
         str = string("textures/texture") + std::to_string(i) + string("-");
         for (int j = 0; j < 15; j++) {
-            string str1 = str + std::to_string(j) + string("-min.png");
+            string str1 = str + std::to_string(j) + string(".png");
             textures[i][j] = SOIL_load_OGL_texture(
                     str1.c_str(),
                     SOIL_LOAD_AUTO,
@@ -163,8 +163,8 @@ void display() {
         //инициализация новой колоды
         InitDeck();
         //раздача по 7 карт
-        more(1, Player1);
-        more(10, Player2);
+        more(7, Player1);
+        more(7, Player2);
         //достаем первую активную карту
         Activity();
         state = 1; // ходит первый игрок
@@ -242,7 +242,7 @@ void display() {
     }
         //если ход компа
     else if (state == 3) {
-        sleep(1);
+        Sleep(1000);
         //Если карта специальная ( пропуск хода )
         if ((Discard.back().Value == 10 || Discard.back().Value == 12) && triger) {
             state = 1;
